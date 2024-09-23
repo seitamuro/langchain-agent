@@ -8,13 +8,15 @@ from langchain_chroma import Chroma
 args = sys.argv
 
 youtube_url = args[1]
-loader = YoutubeLoader.from_youtube_url(youtube_url)
+search_query = args[2]
+
+loader = YoutubeLoader.from_youtube_url(youtube_url, language="ja")
 raw_documents = loader.load()
-text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
+text_splitter = CharacterTextSplitter(chunk_size=100, chunk_overlap=0)
 documents = text_splitter.split_documents(raw_documents)
 db = Chroma.from_documents(documents, BedrockEmbeddings())
-query = "What is LangChain Indexes?"
-docs = db.similarity_search(query)
+docs = db.similarity_search(search_query)
+print("Found: ", len(docs))
 print(docs[0].page_content)
 
 """
